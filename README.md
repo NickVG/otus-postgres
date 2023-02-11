@@ -1,2 +1,2 @@
 # otus-postgres
-Д/З по курсе Postgres
+Д/З по курсу Postgres
