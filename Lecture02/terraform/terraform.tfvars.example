@@ -1,0 +1,6 @@
+token                    = "auth_token_here"
+cloud_id                 = "cloud_id_here"
+folder_id                = "folder_id_here"
+zone                     = "ru-central1-a"
+ssh_pub_key_file = "/home/$USER/.ssh/id_rsa.pub"
+ssh_user = user01

@@ -1,0 +1,6 @@
+---
+# tasks file for db
+- name: Install required packages
+  include_tasks: install.yml
+- name: Initialize DB
+  include_tasks: initdb.yml

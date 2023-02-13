@@ -1,0 +1,2 @@
+[db_server]
+db-0 ansible_host=51.250.91.59 # DB Server 0

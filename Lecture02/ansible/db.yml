@@ -1,0 +1,20 @@
+- name: Ensure hostname set
+  hosts: db_server
+  become: true
+  tasks:
+    - ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+    - name: Configure hosts file
+      copy:
+        src: hosts
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+
+- name: Install db server
+  hosts: db_server 
+  become: true
+  roles:
+    - db

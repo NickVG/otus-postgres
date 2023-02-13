@@ -1,0 +1,30 @@
+---
+- name: check OS version
+  fail: msg='OS is NOT CentOS 7.x'
+  when: ansible_distribution != 'CentOS' or ansible_distribution_major_version != '7'
+
+- name: Download and Install PostgreSQL repo
+  yum: 
+    name: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+    state: present
+    validate_certs: no
+
+- name: Install packages only on DB Servers
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - epel-release
+    - vim
+    - bind-utils
+    - postgresql15-server
+    - postgresql-libs
+    - centos-release-scl
+
+- name: setenforce 0
+  command: setenforce 0
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
