@@ -1,5 +1,18 @@
 #Домашнее задание к Лекции №2 Работа с уровнями изоляции транзакции в PostgreSQL
 
+Для развёртывания стенда подготовлены манифесты тераформ в директории тераформ и ansible playbooks в директории ansible.
+
+Запуск стенда:
+```
+git clone git@github.com:NickVG/otus-postgres.git
+cd otus-postgres/Lecture02/terraform
+terraform apply
+# Ждём пока стартует VM
+sleep 30;
+cd ../ansible 
+ansible-playbook -i inventory  db.yml
+```
+
 ДЗ Выполняем в `psql`
 
 > Выключаем автокоммит
