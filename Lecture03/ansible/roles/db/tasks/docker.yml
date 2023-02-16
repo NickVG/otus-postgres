@@ -1,0 +1,16 @@
+---
+- name: Create dir for git project
+  file:
+    path: /git/
+    state: directory
+    mode: '0755'
+- name: Git download
+  ansible.builtin.git:
+    repo: 'https://github.com/NickVG/otus-postgres.git'
+    dest: "{{ dir }}"
+- name: Run docker-compose
+  shell: "{{ item }}"
+  loop:
+    - 'docker compose -f "{{ dir }}"/Lecture03/ansible/roles/db/files/docker-compose.yml up &'
+       
+

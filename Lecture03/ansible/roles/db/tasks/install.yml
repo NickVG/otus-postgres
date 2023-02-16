@@ -1,0 +1,82 @@
+---
+- name: check OS version
+  fail: msg='OS is NOT Ubuntu 22.04'
+  when: ansible_distribution != 'Ubuntu' or ansible_distribution_version != '22.04'
+
+- name: Remove old Packages
+  apt:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - docker
+    - docker-engine
+    - docker.io
+    - containerd runc
+
+- name: Ensure dependencies are installed.
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - gnupg
+      - lsb-release
+    state: present
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu jammy stable
+    state: present
+- name: update apt
+  apt:
+    update_cache: yes
+
+- name: Install docker
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+
+- name: Service status - docker
+  service:
+    name: docker
+    state: started
+
+- name: docker ps -a
+  shell: sudo docker ps -a
+  register: docker_ps
+
+- debug:
+    var: docker_ps.stdout_lines
+
+- name: Run Hello World
+  shell: sudo docker run hello-world
+  register: docker_run
+
+- debug:
+    var: docker_run.stdout_lines
+
+- name: docker ps -a run
+  shell: sudo docker ps -a
+  register: docker_ps_run
+
+- debug:
+    var: docker_ps_run.stdout_lines
+
+#- name: Install docker-compose from official github repo
+#  get_url:
+#    url : https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+#    dest: /usr/local/bin/docker-compose
+#    mode: 'u+x,g+x'
