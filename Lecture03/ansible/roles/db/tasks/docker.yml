@@ -10,7 +10,13 @@
     dest: "{{ dir }}"
 - name: Run docker-compose
   shell: "{{ item }}"
+#  register: output
+#  failed_when: false
+#  ignore_errors: True
+  args:
+    chdir: "{{ dir }}/Lecture03/ansible/roles/db/files/"
   loop:
-    - 'docker compose -f "{{ dir }}"/Lecture03/ansible/roles/db/files/docker-compose.yml up &'
-       
+    - "bash docker-compose.sh > /dev/null 2>&1"
+
+#    - 'docker compose -f {{ dir }}/Lecture03/ansible/roles/db/files/docker-compose.yml up & > /dev/null 2>&1'
 
