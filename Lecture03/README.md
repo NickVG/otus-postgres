@@ -35,7 +35,7 @@ COMMIT
 Удаляем контейнер через `docker compose down`
 И запускаем его заново `docker compose up &`
 
-![Screenshot](./pictures/container_return.png)
+![Screenshot](./pictures/container_rerun.png)
 
 И уже при старте контейнера видим, что postgres видит базу которая была создана ранее.
 Подключившись к базе через psql видим, что все данные остались на месте.
