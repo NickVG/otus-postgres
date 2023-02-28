@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgres-14:
+    hostname: docker-db-0
+    container_name: docker-db-0
+    image: postgres:14.7
+#    volumes:
+#      - /var/lib/postgres/:/var/lib/postgresql/data
+    networks:
+      - backend
+    ports:
+      - '5432:5432'
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+#volumes:
+#  pg_data:
+#    driver: local
+#    driver_opts:
+#      type: 'none'
+#      o: 'bind'
+#      device: '/var/lib/postgres'
+
+networks:
+  backend:

@@ -1,0 +1,69 @@
+# Vagrant файл предназначен для развёртывания одной и более машин
+# с несколькими дисками
+# возможностью использования скриптов и ansible
+#
+
+disk = '/home/nick/secondDisk.vdi'
+$script = <<-'SCRIPT'
+mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh
+sed -i '65s/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+systemctl restart sshd
+#cat /vagrant/provision/hosts > /etc/hosts
+apt-get install sshpass -y
+SCRIPT
+
+$scriptssh = <<-'SCRIPT'
+ssh-keygen -q -t rsa -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+sshpass -p "vagrant" ssh-copy-id -o StrictHostKeyChecking=no root@server
+sshpass -p "vagrant" ssh-copy-id -o StrictHostKeyChecking=no root@client
+SCRIPT
+
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "./vagrant_ubuntu"
+#  config.vbguest.auto_update = false
+
+  config.vm.define "server" do |server|
+    server.vm.network "private_network", ip: "192.168.56.101"
+    server.vm.provider "virtualbox" do |v|
+      unless File.exist?(disk)
+        v.customize ['createhd', '--filename', disk, '--variant', 'Fixed', '--size', 6 * 1024]
+      end
+      v.memory = 2048
+      v.cpus = 2
+      
+# Next String is for Ubuntu; Следующая строчка предназначена для Ubuntu
+#      config.vm.disk :disk, size: "2GB", name: "disk02"
+# Next String is for CentOS; Следующая строчка предназначена для CentOS
+      v.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk]
+    end
+    server.vm.hostname = "server"
+    config.vm.disk :disk, size: "2GB", name: "disk02"
+  end
+#  config.vm.disk :disk, size: "2GB", name: "disk02"
+
+  config.vm.define "server2" do |server2|
+    server2.vm.network "private_network", ip: "192.168.56.102"
+    server2.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 2
+    end
+    server2.vm.hostname = "server2"
+  end
+  config.vm.provision "sshpassw", type: "shell", inline: $script
+#  config.vm.provision "sshkey", type: "shell", inline: $scriptssh
+#  config.vm.provision "sshnopassw", type: "shell", inline: $scriptsshkey
+  config.vm.provision "Postgres", type:'ansible' do |ansible|
+    ansible.inventory_path = './provision/ansible/inventory'
+    ansible.playbook = './provision/ansible/db.yml'
+  end
+#  config.vm.provision "shell", inline: $scriptssh
+#  config.vm.provision "shell", inline: $scriptssh do |server2|
+    
+end
+
+#Vagrant.configure("2") do |config|
+#  config.vm.box = "./vagrant_ubuntu"
+#end
+
