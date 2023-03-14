@@ -18,17 +18,17 @@ psql -U testread -d testdb
 ```  
 Попробуем подключиться к таблице
 
-![Screenshot](./pictures/01-Error.png)
+![Screenshot](./pictures/01-Error.png "Ошибка доступа")
 
 Получили ошибку доступа, проверям где находится наша тестовая таблица и видим, что она находится в схеме public
 
 А всё потому, что `show search_path` покажет `"$user", public` т.е. созданная схема не используется по-умолчанию. Необходимо указывать её при создании объектов.
 
-![Screenshot](./pictures/02-dt.png)
+![Screenshot](./pictures/02-dt.png "Выводим информациб о таблицах")
 
 Удалим таблицу t1 и создадим её заново, но уже с указанием схемы.
 
-![Screenshot](./pictures/03-drop_table_and_create_new.png)
+![Screenshot](./pictures/03-drop_table_and_create_new.png "Пересоздаём таблицу")
 
 Создаём новую таблицу с указанем схемы, вставляем строку со значением c1=1
 
@@ -40,11 +40,11 @@ psql -U testread -d testdb
 ALTER DEFAULT PRIVILEGES IN SCHEMA testnm GRANT SELECT ON TABLES TO testread;
 ```
 
-![Screenshot](./pictures/04-GRANT_DEFAULT.png)
+![Screenshot](./pictures/04-GRANT_DEFAULT.png "Выдаём привелегии по-умолчанию")
 
 Возвращаемся к базе, проверям `select * from testnm.t1;` и опять не работает, а почему? А потому что права по умолчанию дали, а на уже созданные объекты прав не выдали.
 
-![Screenshot](./pictures/05-permission_denied.png)
+![Screenshot](./pictures/05-permission_denied.png "Ошибка доступа")
 
 После того как выдали `grant SELECT ON ALL TABLES IN SCHEMA testnm to readonly;` Всё прекрасно работет.
 
@@ -52,7 +52,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA testnm GRANT SELECT ON TABLES TO testread;
 
 Таблицы прекрасно создались т.к. `search_path` никто не менял и от схемы `public` права никто не отбирал
 
-![Screenshot](./pictures/06-grant_priveleges.png)
+![Screenshot](./pictures/06-grant_priveleges.png "Выдаём привелегии")
 
 Решил эту проблему кардинально: `REVOKE ALL ON schema public FROM public;` (т.е. забрал у всех права на создание объектов в public)
 
