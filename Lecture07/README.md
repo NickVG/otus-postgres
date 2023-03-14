@@ -60,6 +60,6 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA testnm GRANT SELECT ON TABLES TO testread;
 
 А вот `revoke ALL ON SCHEMA public FROM testread ;` или `revoke ALL ON SCHEMA public FROM readonly ;` почему-то не сработало.
 
-![Screenshot](./pictures/08-revoke from user.png "Отбираем права у пользователя и роли")
+![Screenshot](./pictures/08-revoke_from_user.png "Отбираем права у пользователя и роли")
 
 ![Screenshot](./pictures/09-no_effect.png "И никакого эффекта")
