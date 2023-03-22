@@ -198,6 +198,8 @@ ERROR:  invalid page in block 0 of relation base/13726/33752
 Очевидно, что checksum не сходится. Для того, точбы вытащить данные выполняем:
 
 ```
+postgres=# set ignore_checksum_failure = on;
+SET
 postgres=# select * from rooms ;
 WARNING:  page verification failed, calculated checksum 27574 but expected 3916
  room_num | arendator 
