@@ -195,7 +195,7 @@ WARNING:  page verification failed, calculated checksum 27574 but expected 3916
 ERROR:  invalid page in block 0 of relation base/13726/33752
 ```
 
-Очевидно, что checksum не сходится. Для того, точбы вытащить данные выполняем:
+Очевидно, что checksum не сходится. Для того, чтобы вытащить данные выполняем:
 
 ```
 postgres=# set ignore_checksum_failure = on;
