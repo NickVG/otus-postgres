@@ -1,0 +1,76 @@
+# Vagrant файл предназначен для развёртывания одной и более машин
+# с несколькими дисками
+# возможностью использования скриптов и ansible
+#
+
+#объёкт диск активируем при необходимости
+#disk = '/home/nick/secondDisk.vdi'
+$script = <<-'SCRIPT'
+mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh
+sed -i '65s/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+systemctl restart sshd
+#cat /vagrant/provision/hosts > /etc/hosts
+apt-get install sshpass -y
+SCRIPT
+
+$scriptssh = <<-'SCRIPT'
+ssh-keygen -q -t rsa -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+sshpass -p "vagrant" ssh-copy-id -o StrictHostKeyChecking=no root@server
+sshpass -p "vagrant" ssh-copy-id -o StrictHostKeyChecking=no root@client
+SCRIPT
+
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "./vagrant_ubuntu"
+#  config.vbguest.auto_update = false
+  config.vm.define "server01" do |server01|
+    server01.vm.network "private_network", ip: "192.168.56.101"
+    server01.vm.provider "virtualbox" do |v|
+#      unless File.exist?(disk)
+#        v.customize ['createhd', '--filename', disk, '--variant', 'Fixed', '--size', 6 * 1024]
+#      end
+      v.memory = 2048
+      v.cpus = 1
+# Next String is for mappinng drive into VM
+#      v.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk]
+    end
+    server01.vm.hostname = "server01"
+#    config.vm.disk :disk, size: "2GB", name: "disk02"
+  end
+
+  config.vm.define "server02" do |server02|
+    server02.vm.network "private_network", ip: "192.168.56.102"
+    server02.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 1
+    end
+    server02.vm.hostname = "server02"
+  end
+
+  config.vm.define "server03" do |server03|
+    server03.vm.network "private_network", ip: "192.168.56.103"
+    server03.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 1
+    end
+    server03.vm.hostname = "server03"
+  end
+
+  config.vm.define "server04" do |server04|
+    server04.vm.network "private_network", ip: "192.168.56.104"
+    server04.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 1
+    end
+    server04.vm.hostname = "server04"
+  end
+
+  config.vm.provision "Postgres", type:'ansible' do |ansible|
+    ansible.inventory_path = './provision/ansible/inventory'
+    ansible.playbook = './provision/ansible/db.yml'
+# On\Off ansible verbose
+#    ansible.verbose = "vvv"
+  end
+end
+
