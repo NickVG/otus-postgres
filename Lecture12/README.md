@@ -52,7 +52,7 @@ testdb=# CREATE PUBLICATION test2_pub FOR TABLE test2;
 CREATE PUBLICATION
 ```
 
-Создаём подписку на Server01, теперь уже с опцие не копировать существующие данные.
+Создаём подписку на Server01, теперь уже с опцией не копировать существующие данные.
 
 ```
 testdb=# create subscription test2_sub connection 'host=192.168.56.102 dbname=testdb user=postgres password=postgres' publication test2_pub with ( copy_data = false);
