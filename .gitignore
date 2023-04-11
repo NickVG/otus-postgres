@@ -6,3 +6,4 @@ variables.json
 .terraform
 */.vagrant/*
 .tfvars*
+loader.rb
