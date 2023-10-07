@@ -1,0 +1,62 @@
+---
+- name: check OS version
+  fail: msg='OS is NOT Ubuntu 20.04'
+  when: ansible_distribution != 'Ubuntu' or ansible_distribution_version != '20.04'
+
+- name: Install packages only at DB Servers
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - curl
+    - ca-certificates
+    - gnupg
+
+- name: Download and Install PostgreSQL repo
+  shell: "{{ item }}"
+  loop:
+    - "curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null"
+    - "echo 'deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main' > /etc/apt/sources.list.d/pgdg.list"
+
+- name: Install packages only at DB Servers
+  apt:
+    update_cache: yes
+
+- name: Install packages at DB Servers
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - vim
+    - postgresql-14
+- name: Create backup directory
+  file:
+    state: directory
+    path: /pg_backup/
+    owner: postgres
+    group: postgres
+    mode: '0700'
+- name: Create Database, backup and restore data via Copy and pg_dump
+  script: "{{ item }}"
+  loop:
+    - "script.sql"
+#    - "pg_dump_restore.sql"
+#- name: Create Backup via pg_dump
+- name: Disable ufw service
+  systemd:
+    name: ufw
+    state: stopped
+    enabled: false
+- name: Copy Postgres config files
+  copy:
+    src: "{{ item }}"
+    dest: '/etc/postgresql/14/main/{{ item }}'
+  loop:
+      - postgresql.conf
+      - pg_hba.conf
+- name:
+  systemd:
+    name: postgresql
+    state: restarted
