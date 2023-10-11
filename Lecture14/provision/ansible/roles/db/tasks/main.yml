@@ -1,0 +1,6 @@
+---
+# tasks file for db
+- name: Install required packages and Prepare DB
+  include_tasks: install.yml
+- name: Backup and Restore via pg_dump
+  include_tasks: pg_dump.yml
