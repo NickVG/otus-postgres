@@ -1,4 +1,0 @@
-- name: Create Database, backup and restore data via pg_dump
-  script: "{{ item }}"
-  loop:
-    - "pg_dump.sh"

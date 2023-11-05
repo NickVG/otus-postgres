@@ -2,5 +2,5 @@
 # tasks file for db
 - name: Install required packages and Prepare DB
   include_tasks: install.yml
-- name: Backup and Restore via pg_dump
+- name: Deploy flights DB
   include_tasks: pg_dump.yml
